@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attractive Stopwatch</title>
+    <style>
+      @font-face {
+        font-family: 'Alex Brush';
+  src: url('AlexBrush-regular.ttf') format('truetype'); /* Adjust the path */
+  font-weight: normal;
+  font-style: normal;
+}
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        font-family: "Alex Brush", cursive; /* Use Alex Brush font */
+        background-color: #f3f3f3;
+        background-image: url("swimg.jpg"); 
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      #stopwatch {
+        text-align: center;
+        background-color: #fff;
+        border-radius: 182px;
+        margin: 13px;
+        padding: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        margin-left: 44rem;
+      }
+
+      h1 {
+        color: #dd0000;
+        text-shadow: 1px 1px 2px rgb(172, 45, 67);
+        font-size: 3em;
+        margin: 10px 0;
+      }
+
+      button {
+        background-color: #dd0000;
+        text-shadow: 1px 1px 2px rgb(172, 45, 67);
+        color: #fff;
+        border: none;
+        font-weight: bold;
+        padding: 10px 20px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        border-radius: 5px;
+        margin: 5px;
+        font-family: "Alex Brush", cursive; /* Use Alex Brush font */
+
+      }
+
+      button:hover {
+        background-color: #ff433c;
+      }
+
+      #lapTimes {
+        text-align: center;
+        margin-top: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+
+      h2 {
+        color: #333;
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        font-size: 1.2em;
+        margin: 10px 0;
+        color: #555;
+      }
+
+      .title{
+        position: absolute;
+        top: 25px;
+        right: 13rem;
+        font-size: 4rem;
+        font-weight: bold;
+        font-family: "Alex Brush", cursive; /* Use Alex Brush font */
+        color: #ffffff;
+        text-shadow: 1px 1px 2px rgb(255, 0, 43);
+          }
+
+          #lapTimes {
+            position: absolute;
+            top: 209px;
+            right: 39rem;
+            width: 200px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 2; /* Ensure it's above the background image */
+            
+      }
+
+      /* Additional styles for the sticker effect */
+      #lapTimes::before {
+        content: "";
+        position: absolute;
+        top: -10px;
+        right: 50%;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 15px 15px 15px;
+        border-color: transparent transparent #fff transparent;
+        z-index: 3; /* Ensure it's above the lapTimes div */
+      }
+
+      h2 {
+        color: #dd0000;
+        text-shadow: 1px 1px 2px rgb(72 61 63);
+
+        font-size: 2em;
+        margin-bottom: 10px;
+        position: relative; /* Add this line */
+        z-index: 4; /* Ensure it's above the ::before pseudo-element */
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        font-size: 1.2em;
+        margin: 10px 0;
+        color: #555;
+        text-shadow: 1px 1px 2px rgb(172, 45, 67);
+      }
+
+    
+
+    </style>
+  </head>
+  <body>
+    <div class="title">
+      <p>StopWatch</p>
+    </div>
+    <div id="stopwatch">
+      <h1 id="display">00:00:00</h1>
+      <button onclick="startPause()">Start</button>
+      <button onclick="reset()">Reset</button>
+      <button onclick="recordLapTime()">Laps</button>
+    </div>
+
+    <div id="lapTimes">
+      <h2>Lap Times</h2>
+      <ul id="lapList"></ul>
+    </div>
+
+    <script>
+      let timer;
+      let isRunning = false;
+      let seconds = 0;
+      let lapTimes = [];
+
+      function startPause() {
+        if (isRunning) {
+          clearInterval(timer);
+          document.querySelector("#display").innerHTML = formatTime(seconds);
+          document.querySelector("button").innerHTML = "Resume";
+        } else {
+          timer = setInterval(updateDisplay, 1000);
+          document.querySelector("button").innerHTML = "Pause";
+        }
+        isRunning = !isRunning;
+      }
+
+      function reset() {
+        clearInterval(timer);
+        isRunning = false;
+        seconds = 0;
+        lapTimes = [];
+        document.querySelector("#display").innerHTML = formatTime(seconds);
+        document.querySelector("#lapList").innerHTML = "";
+        document.querySelector("button").innerHTML = "Start";
+      }
+
+      function recordLapTime() {
+        if (isRunning) {
+          lapTimes.push(seconds);
+          const lapList = document.querySelector("#lapList");
+          const lapItem = document.createElement("li");
+          lapItem.innerHTML = `Lap ${lapTimes.length}: ${formatTime(seconds)}`;
+          lapList.appendChild(lapItem); // Append lap item to the end of the list
+        }
+      }
+
+      function updateDisplay() {
+        seconds++;
+        document.querySelector("#display").innerHTML = formatTime(seconds);
+      }
+
+      function formatTime(time) {
+        const hours = Math.floor(time / 3600);
+        const minutes = Math.floor((time % 3600) / 60);
+        const seconds = time % 60;
+
+        const formattedHours = hours.toString().padStart(2, "0");
+        const formattedMinutes = minutes.toString().padStart(2, "0");
+        const formattedSeconds = seconds.toString().padStart(2, "0");
+
+        return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+      }
+    </script>
+  </body>
+</html>
